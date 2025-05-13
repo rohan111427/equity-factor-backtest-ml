@@ -1,0 +1,7 @@
+yfinance
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+#contains the requirememnts of the project \
