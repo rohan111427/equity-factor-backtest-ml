@@ -5,7 +5,7 @@ from strategies.factor_strategy import rank_stocks
 
 
 def get_monthly_ranked_stocks(stock_data,start_date,end_date,top_n=5):
-    dates = pd.date_range(start=start_date,end=end_date,freq='M')
+    dates = pd.date_range(start=start_date,end=end_date,freq='ME')
     ranked_stocks_per_month = {}
     
     for date in dates:
