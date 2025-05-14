@@ -1,20 +1,21 @@
-import os
-
-from strategies.factor_builder import compute_all_factors
-from strategies.factor_strategy import rank_stocks
+from portfolio.backtester import run_backtest
+from strategies.monthly_selector import get_monthly_ranked_stocks
 from utils.data_loader import load_multiple_stocks
+from utils.metrics import analyze_performance
 
-# Step 1: Choose stock tickers that match your CSV file names
+# Step 1: Load stock data
 tickers = ["INFY.NS", "TCS.NS", "WIPRO.NS", "HCLTECH.NS", "TECHM.NS"]
+stock_data = load_multiple_stocks(tickers)
 
-# Step 2: Load their data
-stock_data = load_multiple_stocks(tickers, data_dir="data")
+# Step 2: Get monthly top-N ranked stocks
+ranked_stocks_per_month = get_monthly_ranked_stocks(
+    stock_data, start_date="2015-01-01", end_date="2023-12-31", top_n=5
+)
 
-# Step 3: Compute factors
-factor_df = compute_all_factors(stock_data)
-print("Factor Scores:\n", factor_df)
+# Step 3: Run backtest
+portfolio_series = run_backtest(stock_data, ranked_stocks_per_month)
 
-# Step 4: Rank stocks
-ascending_factors = ["volatility"]  # lower is better
-top_stocks = rank_stocks(factor_df, ascending_factors=ascending_factors, top_n=3)
-print("\n🏆 Top Ranked Stocks:\n", top_stocks)
+# Step 4: Analyze performance
+metrics = analyze_performance(portfolio_series.dropna())
+for metric, value in metrics.items():
+    print(f"{metric}: {value:.2%}")
