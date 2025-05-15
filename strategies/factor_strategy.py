@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from strategies.factor_builder import compute_all_factors
 
 
-def rank_stocks(factor_df, ascending_factors=None, weights=None, top_n=5):
+def rank_stocks(factor_df,weights = None,ascending_factors = None, top_n=5):
     """
     Ranks stocks based on multiple factors using optional weights and order direction.
 

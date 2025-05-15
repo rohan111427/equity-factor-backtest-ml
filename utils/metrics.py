@@ -49,3 +49,39 @@ def analyze_performance(portfolio_series, risk_free_rate=0.0002, ranked_stocks_p
         "Max Drawdown": max_drawdown,
         "Turnover": turnover
     }
+    
+def compare_to_benchmark(portfolio_series, benchmark_series, risk_free_rate=0.0002):
+    """
+    Compares a strategy to a benchmark (like NIFTY 50).
+    
+    Returns:
+    - Dictionary with alpha, beta, tracking error, and information ratio.
+    """
+    portfolio_returns = portfolio_series.pct_change().dropna()
+    benchmark_returns = benchmark_series.pct_change().dropna()
+
+    # Align lengths
+    joined = pd.concat([portfolio_returns, benchmark_returns], axis=1).dropna()
+    joined.columns = ['strategy', 'benchmark']
+
+    strategy = joined['strategy']
+    benchmark = joined['benchmark']
+
+    # Beta: slope of linear regression (strategy ~ benchmark)
+    beta = strategy.cov(benchmark) / benchmark.var()
+
+    # Alpha: average monthly excess return
+    alpha = (strategy.mean() - risk_free_rate) - beta * (benchmark.mean() - risk_free_rate)
+
+    # Tracking Error: std deviation of difference in returns
+    tracking_error = (strategy - benchmark).std()
+
+    # Information Ratio = alpha / tracking error
+    info_ratio = alpha / tracking_error if tracking_error != 0 else 0
+
+    return {
+        "Alpha": alpha,
+        "Beta": beta,
+        "Tracking Error": tracking_error,
+        "Information Ratio": info_ratio
+    }    
